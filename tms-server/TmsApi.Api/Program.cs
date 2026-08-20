@@ -429,7 +429,7 @@ static void ApplyMigrationsAndSeedDatabase(WebApplication app)
 static void ConfigureMiddlewarePipeline(WebApplication app)
 {
     // ✅ IMPORTANT: CORS must be before other middleware
-    app.UseCors("AllowAngular");
+    // app.UseCors("AllowAngular");
 
     // Error handling
     app.UseExceptionHandler();

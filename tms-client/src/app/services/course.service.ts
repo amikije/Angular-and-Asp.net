@@ -1,25 +1,44 @@
-import { Injectable, inject } from '@angular/core'; // ← Change this
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { Course, CourseDetail, PagedResponse } from '../models/course.model';
 
 @Injectable({
-  // ← Change from @Service()
-  providedIn: 'root', // ← Add this
+  providedIn: 'root',
 })
 export class CourseService {
   private http = inject(HttpClient);
-  private baseUrl = 'https://localhost:5001/api/v1/courses';
+  private readonly base = `${environment.apiBaseUrl}/courses`;
 
-  getAll() {
+  getAll(): Observable<Course[]> {
+    console.log('📡 Fetching courses from:', this.base);
+
     return this.http
-      .get<PagedResponse<Course>>(this.baseUrl, {
+      .get<PagedResponse<Course>>(this.base, {
         params: { page: '1', pageSize: '50' },
       })
-      .pipe(map((p) => p.items));
+      .pipe(
+        map((response) => {
+          console.log('✅ Courses loaded:', response.items?.length || 0);
+          return response.items || [];
+        }),
+        catchError((error) => {
+          console.error('❌ Error fetching courses:', error);
+          return throwError(() => error);
+        }),
+      );
   }
 
-  getById(id: string) {
-    return this.http.get<CourseDetail>(`${this.baseUrl}/${id}`);
+  getById(id: string): Observable<CourseDetail> {
+    console.log('📡 Fetching course details for ID:', id);
+
+    return this.http.get<CourseDetail>(`${this.base}/${id}`).pipe(
+      catchError((error) => {
+        console.error(`❌ Error fetching course ${id}:`, error);
+        return throwError(() => error);
+      }),
+    );
   }
 }
