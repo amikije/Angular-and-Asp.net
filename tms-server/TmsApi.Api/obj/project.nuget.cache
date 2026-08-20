@@ -1,0 +1,131 @@
+{
+  "version": 2,
+  "dgSpecHash": "+EQ+TQzBcPY=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\asp.versioning.abstractions\\7.0.0\\asp.versioning.abstractions.7.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\asp.versioning.http\\7.1.0\\asp.versioning.http.7.1.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\asp.versioning.mvc\\7.1.0\\asp.versioning.mvc.7.1.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\asp.versioning.mvc.apiexplorer\\7.1.0\\asp.versioning.mvc.apiexplorer.7.1.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\aspnetcore.healthchecks.npgsql\\7.0.0\\aspnetcore.healthchecks.npgsql.7.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.1.1\\fluentvalidation.dependencyinjectionextensions.12.1.1.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\google.protobuf\\3.22.5\\google.protobuf.3.22.5.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\grpc.core.api\\2.52.0\\grpc.core.api.2.52.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\grpc.net.client\\2.52.0\\grpc.net.client.2.52.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\grpc.net.common\\2.52.0\\grpc.net.common.2.52.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\mediatr\\14.2.0\\mediatr.14.2.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.10\\microsoft.aspnetcore.openapi.10.0.10.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.bcl.timeprovider\\8.0.0\\microsoft.bcl.timeprovider.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.entityframeworkcore\\8.0.0\\microsoft.entityframeworkcore.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\8.0.0\\microsoft.entityframeworkcore.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\8.0.0\\microsoft.entityframeworkcore.analyzers.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\8.0.0\\microsoft.entityframeworkcore.relational.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.extensions.ambientmetadata.application\\8.0.0\\microsoft.extensions.ambientmetadata.application.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.extensions.caching.hybrid\\9.3.0\\microsoft.extensions.caching.hybrid.9.3.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.extensions.compliance.abstractions\\8.0.0\\microsoft.extensions.compliance.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.extensions.dependencyinjection.autoactivation\\8.0.0\\microsoft.extensions.dependencyinjection.autoactivation.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.extensions.diagnosticadapter\\3.1.32\\microsoft.extensions.diagnosticadapter.3.1.32.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.extensions.diagnostics.exceptionsummarization\\8.0.0\\microsoft.extensions.diagnostics.exceptionsummarization.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.extensions.http.diagnostics\\8.0.0\\microsoft.extensions.http.diagnostics.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.extensions.http.resilience\\8.0.0\\microsoft.extensions.http.resilience.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.extensions.resilience\\8.0.0\\microsoft.extensions.resilience.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.extensions.telemetry\\8.0.0\\microsoft.extensions.telemetry.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.extensions.telemetry.abstractions\\8.0.0\\microsoft.extensions.telemetry.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.identitymodel.abstractions\\8.14.0\\microsoft.identitymodel.abstractions.8.14.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\8.14.0\\microsoft.identitymodel.jsonwebtokens.8.14.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.identitymodel.logging\\8.14.0\\microsoft.identitymodel.logging.8.14.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.14.0\\microsoft.identitymodel.tokens.8.14.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.io.recyclablememorystream\\2.3.2\\microsoft.io.recyclablememorystream.2.3.2.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\npgsql\\8.0.0\\npgsql.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\8.0.0\\npgsql.entityframeworkcore.postgresql.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\opentelemetry\\1.7.0\\opentelemetry.1.7.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\opentelemetry.api\\1.7.0\\opentelemetry.api.1.7.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\opentelemetry.api.providerbuilderextensions\\1.7.0\\opentelemetry.api.providerbuilderextensions.1.7.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\opentelemetry.exporter.opentelemetryprotocol\\1.7.0\\opentelemetry.exporter.opentelemetryprotocol.1.7.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\opentelemetry.extensions.hosting\\1.7.0\\opentelemetry.extensions.hosting.1.7.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\opentelemetry.instrumentation.aspnetcore\\1.7.0\\opentelemetry.instrumentation.aspnetcore.1.7.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\opentelemetry.instrumentation.http\\1.7.0\\opentelemetry.instrumentation.http.1.7.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\polly.core\\8.0.0\\polly.core.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\polly.extensions\\8.0.0\\polly.extensions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\polly.ratelimiting\\8.0.0\\polly.ratelimiting.8.0.0.nupkg.sha512",
+    "C:\\Users\\Amir_JS\\.nuget\\packages\\scalar.aspnetcore\\2.16.20\\scalar.aspnetcore.2.16.20.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "message": "TmsApi.Api depends on Microsoft.Extensions.Caching.Hybrid (>= 8.0.0) but Microsoft.Extensions.Caching.Hybrid 8.0.0 was not found. Microsoft.Extensions.Caching.Hybrid 9.3.0 was resolved instead.",
+      "projectPath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "libraryId": "Microsoft.Extensions.Caching.Hybrid",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'Microsoft.OpenApi' 2.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-v5pm-xwqc-g5wc",
+      "projectPath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "libraryId": "Microsoft.OpenApi",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'Npgsql' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-x9vc-6hfv-hg8c",
+      "projectPath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "libraryId": "Npgsql",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Package 'OpenTelemetry.Api' 1.7.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-g94r-2vxg-569j",
+      "projectPath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "libraryId": "OpenTelemetry.Api",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Package 'OpenTelemetry.Instrumentation.AspNetCore' 1.7.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-vh2m-22xx-q94f",
+      "projectPath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "libraryId": "OpenTelemetry.Instrumentation.AspNetCore",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1902",
+      "level": "Warning",
+      "message": "Package 'OpenTelemetry.Instrumentation.Http' 1.7.0 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-vh2m-22xx-q94f",
+      "projectPath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Amir_JS\\Desktop\\ASP.NET-M7-4-dev\\TMS MAIN\\tms-server\\TmsApi.Api\\TmsApi.Api.csproj",
+      "libraryId": "OpenTelemetry.Instrumentation.Http",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
+}
