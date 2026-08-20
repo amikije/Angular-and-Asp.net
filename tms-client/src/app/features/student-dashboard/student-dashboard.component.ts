@@ -1,9 +1,9 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
-
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CourseCardComponent } from '../../ui/course-card/course-card.component';
 import { Course } from '../../models/course.model';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { CourseService } from '../../services/course.service';
+import { EnrollmentStore } from '../../store/enrollment.store';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -12,27 +12,34 @@ import { CourseService } from '../../services/course.service';
   templateUrl: './student-dashboard.component.html',
   styleUrl: './student-dashboard.component.scss',
 })
-export class StudentDashboardComponent {
-  private readonly courseService = inject(CourseService);
+export class StudentDashboardComponent implements OnInit {
+  private api = inject(CourseService);
+  enrollmentStore = inject(EnrollmentStore);
 
-  readonly studentName = signal('Liya Kebede');
-  readonly earnedCredits = signal(45);
-  readonly selectedCourse = signal<Course | null>(null);
+  studentName = signal('Liya Kebede');
+  earnedCredits = signal(126);
 
-  readonly graduationStatus = computed(() =>
+  graduationStatus = computed(() =>
     this.earnedCredits() >= 120 ? 'Eligible for Graduation' : 'In Progress',
   );
 
-  readonly coursesResource = rxResource({
-    stream: () => this.courseService.getAll(),
+  coursesResource = rxResource({
+    stream: () => this.api.getAll(),
   });
 
-  registerForClass(): void {
-    this.earnedCredits.update((credits) => credits + 3);
+  selectedCourse = signal<Course | null>(null);
+
+  ngOnInit() {
+    // Load enrollments when dashboard loads
+    this.enrollmentStore.loadEnrollments();
   }
 
-  handleEnroll(course: Course): void {
+  registerForClass() {
+    this.earnedCredits.update((c) => c + 3);
+  }
+
+  handleEnroll(course: Course) {
     this.selectedCourse.set(course);
-    console.log('Enrollment requested for :', course.title);
+    console.log('Enrollment requested for:', course.title);
   }
 }

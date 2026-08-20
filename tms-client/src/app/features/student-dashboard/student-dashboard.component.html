@@ -1,4 +1,11 @@
+
+
 <div class="dashboard">
+  <nav class="dashboard-nav">
+  <a routerLink="/dashboard" class="active">Dashboard</a>
+  <a routerLink="/enrollments">Enrollment List</a>
+  <a routerLink="/enroll">New Enrollment</a>
+</nav>
   <h1>Welcome, {{ studentName() }}</h1>
   <p>Credits Earned: {{ earnedCredits() }}</p>
   <p>Graduation Status: {{ graduationStatus() }}</p>
@@ -6,6 +13,25 @@
   <button (click)="registerForClass()">
     Register for a Class (+3 credits)
   </button>
+
+  <!-- NEW: Enrollment Summary Widget -->
+  <div class="enrollment-summary">
+    <h3>📋 Enrollment Dashboard</h3>
+    <div class="summary-stats">
+      <div class="stat pending">
+        <span class="count">{{ enrollmentStore.pendingCount() }}</span>
+        <span class="label">Pending</span>
+      </div>
+      <div class="stat approved">
+        <span class="count">{{ enrollmentStore.approvedCount() }}</span>
+        <span class="label">Approved</span>
+      </div>
+      <div class="stat rejected">
+        <span class="count">{{ enrollmentStore.rejectedCount() }}</span>
+        <span class="label">Rejected</span>
+      </div>
+    </div>
+  </div>
 
   <h2>Course Catalog</h2>
 

@@ -1,0 +1,66 @@
+<div class="enrollment-container">
+  <h2>Enrollment Requests</h2>
+
+  <!-- Loading State -->
+  @if (store.isLoading()) {
+    <div class="loading">
+      <p>Loading enrollments...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (store.error()) {
+    <div class="error">
+      <p>{{ store.error() }}</p>
+    </div>
+  }
+
+  <!-- Enrollment List -->
+  @if (!store.isLoading() && !store.error()) {
+    <div class="enrollment-grid">
+      @for (enrollment of store.entities(); track enrollment.id) {
+        <div class="enrollment-card">
+          <div class="enrollment-info">
+            <strong>{{ enrollment.studentName }}</strong>
+            <span>{{ enrollment.courseName }}</span>
+          </div>
+
+          <span 
+            class="status"
+            [class.pending]="enrollment.status === 'Pending'"
+            [class.approved]="enrollment.status === 'Approved'"
+            [class.rejected]="enrollment.status === 'Rejected'"
+          >
+            {{ enrollment.status }}
+          </span>
+
+          @if (enrollment.status === 'Pending') {
+            <div class="actions">
+              <button 
+                class="approve" 
+                (click)="onApprove(enrollment.id)"
+              >
+                Approve
+              </button>
+              <button 
+                class="reject" 
+                (click)="onReject(enrollment.id)"
+              >
+                Reject
+              </button>
+            </div>
+          }
+        </div>
+      } @empty {
+        <p class="empty-state">No enrollment requests found.</p>
+      }
+    </div>
+  }
+
+  <!-- Summary Stats -->
+  <div class="summary">
+    <span>📊 Pending: {{ store.pendingCount() }}</span>
+    <span>✅ Approved: {{ store.approvedCount() }}</span>
+    <span>❌ Rejected: {{ store.rejectedCount() }}</span>
+  </div>
+</div>
