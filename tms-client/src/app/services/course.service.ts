@@ -14,7 +14,6 @@ export class CourseService {
 
   getAll(): Observable<Course[]> {
     console.log('📡 Fetching courses from:', this.base);
-
     return this.http
       .get<PagedResponse<Course>>(this.base, {
         params: { page: '1', pageSize: '50' },
@@ -32,11 +31,20 @@ export class CourseService {
   }
 
   getById(id: string): Observable<CourseDetail> {
-    console.log('📡 Fetching course details for ID:', id);
-
     return this.http.get<CourseDetail>(`${this.base}/${id}`).pipe(
       catchError((error) => {
         console.error(`❌ Error fetching course ${id}:`, error);
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  // ✅ NEW: Delete method
+  delete(id: number): Observable<void> {
+    console.log(`🗑️ Deleting course ${id}...`);
+    return this.http.delete<void>(`${this.base}/${id}`).pipe(
+      catchError((error) => {
+        console.error(`❌ Error deleting course ${id}:`, error);
         return throwError(() => error);
       }),
     );

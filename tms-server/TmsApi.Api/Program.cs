@@ -466,7 +466,9 @@ static void ConfigureMiddlewarePipeline(WebApplication app)
 
 static void MapEndpoints(WebApplication app)
 {
-    app.MapHub<TmsHub>("/hubs/tms");
+    // ✅ SignalR Hub with CORS policy
+    app.MapHub<TmsHub>("/hubs/tms")
+       .RequireCors("TmsClient");
 
     app.MapHealthChecks("/health/live", new HealthCheckOptions
     {

@@ -1,13 +1,9 @@
-<!-- Renders instantly on any connection speed -->
 <div class="dashboard-header">
-  <div class="dashboard-header">
   <div class="header-top">
     <h1>Instructor Command Center</h1>
     <button class="logout-btn" (click)="logout()">Logout</button>
   </div>
-  <!-- ... rest of template ... -->
-</div>
-  <h1>Instructor Command Center</h1>
+
   <div class="kpi-row">
     <div class="kpi-card">
       <span class="kpi-value">{{ store.entities().length }}</span>
@@ -17,19 +13,49 @@
       <span class="kpi-value">{{ store.pendingCount() }}</span>
       <span class="kpi-label">Pending Approval</span>
     </div>
+    <div class="kpi-card">
+      <span class="kpi-value">{{ courseStore.courseCount() }}</span>
+      <span class="kpi-label">Total Courses</span>
+    </div>
   </div>
 </div>
 
-<!-- DEFERRED UI: Chart loads separately -->
+<!-- Error Message -->
+@if (courseStore.error()) {
+  <div class="error-message">
+    ⚠️ {{ courseStore.error() }}
+  </div>
+}
+
+<!-- Course List -->
+<div class="course-list">
+  <h2>Course Catalog</h2>
+  <div class="course-grid">
+    @for (course of courseStore.entities(); track course.id) {
+      <div class="course-card">
+        <div class="course-info">
+          <div class="course-title">{{ course.title }}</div>
+          <div class="course-code">{{ course.code }}</div>
+        </div>
+        <button class="delete-btn" (click)="deleteCourse(course.id)">
+          Delete
+        </button>
+      </div>
+    } @empty {
+      <p style="color: #94a3b8;">No courses available.</p>
+    }
+  </div>
+</div>
+
+<!-- Chart Section -->
 <div class="chart-section">
-  <!-- ✅ Fixed: removed (500) parameter -->
   @defer (on viewport; prefetch on idle) {
     <tms-analytics-chart [data]="store.entities()" />
   } @placeholder {
-    <div class="skeleton-chart">Scroll down to view analytics...</div>
+    <div class="skeleton-chart">📊 Scroll down to view analytics...</div>
   } @loading (minimum 500ms) {
-    <div class="spinner">Downloading chart engine...</div>
+    <div class="spinner">⏳ Downloading chart engine...</div>
   } @error {
-    <p style="color: #ef4444;">Failed to load chart. Check your connection.</p>
+    <p style="color: #ef4444;">❌ Failed to load chart.</p>
   }
 </div>
