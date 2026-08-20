@@ -4,6 +4,7 @@ using Asp.Versioning;
 using FluentValidation;
 using HealthChecks.NpgSql;
 using MediatR;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -45,9 +46,7 @@ var builder = WebApplication.CreateBuilder(args);
 // SERVICE REGISTRATION
 // ============================================================================
 
-// ✅ ADD CORS FIRST - Important for Angular
 RegisterCors(builder);
-
 RegisterDatabase(builder);
 RegisterLogging(builder);
 RegisterControllersAndVersioning(builder);
@@ -62,6 +61,7 @@ RegisterTranscriptQueue(builder);
 RegisterHealthChecks(builder);
 RegisterOpenTelemetry(builder);
 RegisterOpenApiDocuments(builder);
+RegisterAntiforgery(builder);
 RegisterRepositoriesAndServices(builder);
 RegisterDiValidation(builder);
 
@@ -79,27 +79,27 @@ MapEndpoints(app);
 
 app.Run();
 
-
 // ============================================================================
 // SERVICE REGISTRATION METHODS
 // ============================================================================
 
-// ✅ NEW: CORS Configuration
 static void RegisterCors(WebApplicationBuilder builder)
 {
+    var allowedOrigins = builder.Configuration
+        .GetSection("AllowedOrigins")
+        .Get<string[]>() ?? new[] { "http://localhost:4200" };
+
+    Console.WriteLine($"✅ CORS Allowed Origins: {string.Join(", ", allowedOrigins)}");
+
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("AllowAngular", policy =>
+        options.AddPolicy("TmsClient", policy =>
         {
-            policy.WithOrigins(
-                    "http://localhost:4200",      // Angular dev server
-                    "https://localhost:4200",
-                    "http://localhost:4300",      // Alternative ports
-                    "http://127.0.0.1:4200"
-                )
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();  // Needed for SignalR
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials()
+                  .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
         });
     });
 }
@@ -144,17 +144,13 @@ static void RegisterControllersAndVersioning(WebApplicationBuilder builder)
 
 static void RegisterMediatRAndValidation(WebApplicationBuilder builder)
 {
-    // ✅ Fixed: Use assembly from current application
     var assembly = typeof(Program).Assembly;
 
     builder.Services.AddMediatR(cfg =>
     {
         cfg.RegisterServicesFromAssembly(assembly);
-        // Register from Application layer if it exists
-        // cfg.RegisterServicesFromAssembly(typeof(EnrollStudentHandler).Assembly);
     });
 
-    // ✅ Fixed: Register validators from assembly
     builder.Services.AddValidatorsFromAssembly(assembly);
 
     builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
@@ -183,10 +179,8 @@ static void RegisterRateLimiting(WebApplicationBuilder builder)
 {
     builder.Services.AddRateLimiter(options =>
     {
-        // ✅ FIX: Add a global limiter that doesn't block Angular
         options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
         {
-            // Allow Angular dev server to bypass rate limiting for development
             var origin = httpContext.Request.Headers.Origin.ToString();
             if (origin.Contains("localhost:4200") || origin.Contains("localhost:4300"))
             {
@@ -383,6 +377,14 @@ static void RegisterOpenApiDocuments(WebApplicationBuilder builder)
     });
 }
 
+static void RegisterAntiforgery(WebApplicationBuilder builder)
+{
+    builder.Services.AddAntiforgery(options =>
+    {
+        options.HeaderName = "X-XSRF-TOKEN";
+    });
+}
+
 static void RegisterRepositoriesAndServices(WebApplicationBuilder builder)
 {
     builder.Services.AddScoped<ICourseRepository, CourseRepository>();
@@ -412,8 +414,6 @@ static void ApplyMigrationsAndSeedDatabase(WebApplication app)
     try
     {
         context.Database.Migrate();
-        // ✅ Fixed: Check if DatabaseSeeder exists before calling
-        // DatabaseSeeder.Seed(context);
         Console.WriteLine("✅ Database migrations applied successfully");
     }
     catch (Exception ex)
@@ -428,18 +428,36 @@ static void ApplyMigrationsAndSeedDatabase(WebApplication app)
 
 static void ConfigureMiddlewarePipeline(WebApplication app)
 {
-    // ✅ IMPORTANT: CORS must be before other middleware
-    // app.UseCors("AllowAngular");
-
-    // Error handling
+    app.UseRouting();
+    app.UseCors("TmsClient");
     app.UseExceptionHandler();
     app.UseStatusCodePages();
-
-    // Custom middleware
     app.UseMiddleware<V1DeprecationMiddleware>();
-
-    // Rate limiting
     app.UseRateLimiter();
+
+    // XSRF Token Middleware
+    app.Use(async (context, next) =>
+    {
+        if (context.User.Identity?.IsAuthenticated == true ||
+            context.Request.Cookies.ContainsKey("tms_auth"))
+        {
+            var antiforgery = context.RequestServices
+                .GetRequiredService<IAntiforgery>();
+
+            var tokens = antiforgery.GetAndStoreTokens(context);
+
+            context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken,
+                new CookieOptions
+                {
+                    HttpOnly = false,
+                    Secure = !app.Environment.IsDevelopment(),
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddHours(2)
+                });
+        }
+
+        await next(context);
+    });
 }
 
 // ============================================================================
@@ -448,10 +466,8 @@ static void ConfigureMiddlewarePipeline(WebApplication app)
 
 static void MapEndpoints(WebApplication app)
 {
-    // SignalR hub
     app.MapHub<TmsHub>("/hubs/tms");
 
-    // Health checks
     app.MapHealthChecks("/health/live", new HealthCheckOptions
     {
         Predicate = check => check.Tags.Contains("live")
@@ -462,7 +478,6 @@ static void MapEndpoints(WebApplication app)
         Predicate = check => check.Tags.Contains("ready")
     }).DisableRateLimiting();
 
-    // OpenAPI & Scalar
     app.MapOpenApi();
     app.MapScalarApiReference(options =>
     {
@@ -471,7 +486,6 @@ static void MapEndpoints(WebApplication app)
             .AddDocument("v2", "Version 2");
     });
 
-    // Controllers
     app.MapControllers();
 
     // Lab-only fake certificate service

@@ -6,13 +6,13 @@ import {
   _RecycleViewRepeaterStrategy,
   _ViewRepeaterOperation,
   isDataSource
-} from "./chunk-DKN3VAET.js";
-import {
-  Platform
-} from "./chunk-65SQCPPY.js";
+} from "./chunk-HZL6OZWI.js";
 import {
   Directionality
 } from "./chunk-O7EJYH2P.js";
+import {
+  Platform
+} from "./chunk-65SQCPPY.js";
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -2325,4 +2325,4 @@ export {
   CdkTextColumn,
   CdkTableModule
 };
-//# sourceMappingURL=chunk-H7XJKNFK.js.map
+//# sourceMappingURL=chunk-2OTB4IWK.js.map

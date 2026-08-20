@@ -1,0 +1,74 @@
+<div class="login-page">
+  <mat-card class="login-card">
+    <div class="login-header">
+      <div class="logo">
+        <div class="icon">📚</div>
+        <h1>TMS Portal</h1>
+      </div>
+      <p class="subtitle">Sign in to your Training Management System</p>
+    </div>
+
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" placeholder="Enter your username" />
+        <mat-icon matPrefix>person</mat-icon>
+        @if (loginForm.controls.username.hasError('required') && loginForm.controls.username.touched) {
+          <mat-error>Username is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [type]="hidePassword() ? 'password' : 'text'"
+          formControlName="password"
+          placeholder="Enter your password"
+        />
+        <mat-icon matPrefix>lock</mat-icon>
+        <button
+          mat-icon-button
+          type="button"
+          (click)="togglePasswordVisibility()"
+          matSuffix
+        >
+          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (loginForm.controls.password.hasError('required') && loginForm.controls.password.touched) {
+          <mat-error>Password is required</mat-error>
+        }
+        @if (loginForm.controls.password.hasError('minlength') && loginForm.controls.password.touched) {
+          <mat-error>Password must be at least 6 characters</mat-error>
+        }
+      </mat-form-field>
+
+      @if (error()) {
+        <div class="error-message">{{ error() }}</div>
+      }
+
+      <button
+        mat-flat-button
+        type="submit"
+        class="login-button"
+        [disabled]="loginForm.invalid || isLoading()"
+      >
+        <span class="button-content">
+          @if (isLoading()) {
+            <mat-spinner diameter="24"></mat-spinner>
+          } @else {
+            <span>Sign In</span>
+            <mat-icon>arrow_forward</mat-icon>
+          }
+        </span>
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>Secure &bull; Encrypted &bull; Protected</p>
+      <div class="demo-credentials">
+        Demo: <code>admin</code> / <code>Password123!</code>
+      </div>
+    </div>
+  </mat-card>
+</div>

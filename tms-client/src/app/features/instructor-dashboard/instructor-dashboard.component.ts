@@ -1,6 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { EnrollmentStore } from '../../store/enrollment.store';
 import { AnalyticsChartComponent } from '../../ui/analytics-chart/analytics-chart.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'tms-instructor-dashboard',
@@ -8,64 +10,37 @@ import { AnalyticsChartComponent } from '../../ui/analytics-chart/analytics-char
   imports: [AnalyticsChartComponent],
   templateUrl: './instructor-dashboard.component.html',
   styles: `
-    .dashboard-header {
-      padding: 1.5rem;
-    }
-    .kpi-row {
+    .header-top {
       display: flex;
-      gap: 1.5rem;
-      margin-top: 1rem;
-    }
-    .kpi-card {
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      background: #1e293b;
-      color: #e2e8f0;
-      display: flex;
-      flex-direction: column;
-      min-width: 160px;
-    }
-    .kpi-card.pending {
-      border-left: 4px solid #d97706;
-    }
-    .kpi-value {
-      font-size: 2rem;
-      font-weight: 700;
-    }
-    .kpi-label {
-      font-size: 0.85rem;
-      color: #94a3b8;
-      margin-top: 0.25rem;
-    }
-    .chart-section {
-      margin-top: 2rem;
-      padding: 0 1.5rem;
-    }
-    .skeleton-chart {
-      min-height: 250px;
-      display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      background: #1e293b;
-      border: 2px dashed #334155;
-      border-radius: 8px;
-      color: #64748b;
-      font-size: 1rem;
     }
-    .spinner {
-      min-height: 250px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #94a3b8;
-      font-size: 1rem;
+    .logout-btn {
+      padding: 0.5rem 1.5rem;
+      background: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
     }
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
+    /* ... existing styles ... */
   `,
 })
 export class InstructorDashboardComponent implements OnInit {
   store = inject(EnrollmentStore);
+  private auth = inject(AuthService);
+  private router = inject(Router);
 
   ngOnInit() {
     this.store.loadEnrollments();
+  }
+
+  async logout() {
+    await this.auth.logout();
+    this.router.navigate(['/login']);
   }
 }

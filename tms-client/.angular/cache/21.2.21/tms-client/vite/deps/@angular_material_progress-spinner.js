@@ -2,10 +2,10 @@ import {
   _getAnimationsState
 } from "./chunk-6GTK3BEP.js";
 import "./chunk-N4DOILP3.js";
-import "./chunk-65SQCPPY.js";
 import {
   BidiModule
 } from "./chunk-O7EJYH2P.js";
+import "./chunk-65SQCPPY.js";
 import {
   NgTemplateOutlet
 } from "./chunk-JP4ITLID.js";

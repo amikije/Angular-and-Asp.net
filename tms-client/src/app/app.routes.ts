@@ -2,6 +2,10 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login.component').then((m) => m.LoginComponent),
+  },
+  {
     path: 'dashboard',
     loadComponent: () =>
       import('./features/instructor-dashboard/instructor-dashboard.component').then(
@@ -30,22 +34,15 @@ export const routes: Routes = [
       ),
   },
   {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
-  },
-  {
-    path: 'enrollments',
-    loadComponent: () =>
-      import('./features/enrollment-list/enrollment-list.component').then(
-        (m) => m.EnrollmentListComponent,
-      ),
-  },
-  {
     path: 'grade-submission',
     loadComponent: () =>
       import('./features/grade-submission/grade-submission.component').then(
         (m) => m.GradeSubmissionComponent,
       ),
+  },
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full',
   },
 ];

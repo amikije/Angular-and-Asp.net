@@ -7,13 +7,13 @@ import {
   isFakeMousedownFromScreenReader,
   isFakeTouchstartFromScreenReader,
   normalizePassiveListenerOptions
-} from "./chunk-JKGVIRJT.js";
+} from "./chunk-YAR4GFQG.js";
 import {
   _animationsDisabled
 } from "./chunk-6GTK3BEP.js";
 import {
-  _CdkPrivateStyleLoader
-} from "./chunk-CQE7JUM5.js";
+  BidiModule
+} from "./chunk-O7EJYH2P.js";
 import {
   coerceElement
 } from "./chunk-42A5QW43.js";
@@ -21,8 +21,8 @@ import {
   Platform
 } from "./chunk-65SQCPPY.js";
 import {
-  BidiModule
-} from "./chunk-O7EJYH2P.js";
+  _CdkPrivateStyleLoader
+} from "./chunk-CQE7JUM5.js";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -1310,4 +1310,4 @@ export {
   MatMiniFabAnchor,
   MatButtonModule
 };
-//# sourceMappingURL=chunk-POYUPIFP.js.map
+//# sourceMappingURL=chunk-INID4JV3.js.map
