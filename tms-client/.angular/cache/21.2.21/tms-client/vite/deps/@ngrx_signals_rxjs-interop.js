@@ -1,4 +1,4 @@
-import "./chunk-AQ7IC5CC.js";
+import "./chunk-G7YUJB5H.js";
 import {
   DestroyRef,
   Injector,
@@ -6,17 +6,16 @@ import {
   effect,
   inject,
   untracked
-} from "./chunk-RUULVCWP.js";
-import {
-  isObservable
-} from "./chunk-J46EEYGT.js";
-import "./chunk-4YCCEXQQ.js";
+} from "./chunk-4USYIJRO.js";
 import {
   Subject,
-  __spreadProps,
-  __spreadValues,
+  isObservable,
   noop
-} from "./chunk-U7EDC2PH.js";
+} from "./chunk-RSS3ODKE.js";
+import {
+  __spreadProps,
+  __spreadValues
+} from "./chunk-XSXJULYR.js";
 
 // node_modules/@ngrx/signals/fesm2022/ngrx-signals-rxjs-interop.mjs
 function rxMethod(generator, config) {

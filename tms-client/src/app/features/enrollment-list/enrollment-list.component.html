@@ -1,66 +1,56 @@
-<div class="enrollment-container">
-  <h2>Enrollment Requests</h2>
+<h2>Enrollment Records</h2>
 
-  <!-- Loading State -->
-  @if (store.isLoading()) {
-    <div class="loading">
-      <p>Loading enrollments...</p>
-    </div>
-  }
+@if (store.isLoading()) {
+  <p>Loading enrollments...</p>
+}
 
-  <!-- Error State -->
-  @if (store.error()) {
-    <div class="error">
-      <p>{{ store.error() }}</p>
-    </div>
-  }
+@if (store.error()) {
+  <p class="error">{{ store.error() }}</p>
+}
 
-  <!-- Enrollment List -->
-  @if (!store.isLoading() && !store.error()) {
-    <div class="enrollment-grid">
-      @for (enrollment of store.entities(); track enrollment.id) {
-        <div class="enrollment-card">
-          <div class="enrollment-info">
-            <strong>{{ enrollment.studentName }}</strong>
-            <span>{{ enrollment.courseName }}</span>
-          </div>
+<table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+  <!-- Student Name Column -->
+  <ng-container matColumnDef="studentName">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Student</th>
+    <td mat-cell *matCellDef="let row">{{ row.studentName }}</td>
+  </ng-container>
 
-          <span 
-            class="status"
-            [class.pending]="enrollment.status === 'Pending'"
-            [class.approved]="enrollment.status === 'Approved'"
-            [class.rejected]="enrollment.status === 'Rejected'"
-          >
-            {{ enrollment.status }}
-          </span>
+  <!-- Course Name Column -->
+  <ng-container matColumnDef="courseName">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Course</th>
+    <td mat-cell *matCellDef="let row">{{ row.courseName }}</td>
+  </ng-container>
 
-          @if (enrollment.status === 'Pending') {
-            <div class="actions">
-              <button 
-                class="approve" 
-                (click)="onApprove(enrollment.id)"
-              >
-                Approve
-              </button>
-              <button 
-                class="reject" 
-                (click)="onReject(enrollment.id)"
-              >
-                Reject
-              </button>
-            </div>
-          }
-        </div>
-      } @empty {
-        <p class="empty-state">No enrollment requests found.</p>
+  <!-- Status Column -->
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+    <td mat-cell *matCellDef="let row">
+      <span class="status-badge" [class]="row.status.toLowerCase()">
+        {{ row.status }}
+      </span>
+    </td>
+  </ng-container>
+
+  <!-- Actions Column -->
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Actions</th>
+    <td mat-cell *matCellDef="let row">
+      @if (row.status === 'Pending') {
+        <button (click)="onApprove(row.id)">Approve</button>
+        <button (click)="onReject(row.id)" style="margin-left: 8px; background: #dc2626;">
+          Reject
+        </button>
       }
-    </div>
-  }
+    </td>
+  </ng-container>
 
-  <!-- Summary Stats -->
-  <div class="summary">
-    <span>📊 Pending: {{ store.pendingCount() }}</span>
-    <span>✅ Approved: {{ store.approvedCount() }}</span>
-    <span>❌ Rejected: {{ store.rejectedCount() }}</span>
-  </div>
-</div>
+  <!-- Row definitions -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+
+<mat-paginator 
+  [pageSizeOptions]="[5, 10, 25, 50]" 
+  showFirstLastButtons
+  aria-label="Select page of enrollments">
+</mat-paginator>

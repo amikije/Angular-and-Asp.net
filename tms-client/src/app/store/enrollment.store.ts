@@ -1,33 +1,30 @@
-import { computed, inject } from '@angular/core';
+import { computed, inject } from '@angular/core'; // ✅ Fixed import
 import { signalStore, withComputed, withMethods, patchState, withState } from '@ngrx/signals';
 import { withEntities, setAllEntities, updateEntity } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, concatMap, tap, catchError, EMPTY } from 'rxjs';
+import { pipe, concatMap, tap, catchError, EMPTY, switchMap } from 'rxjs';
 import { EnrollmentService } from '../services/enrollment.service';
+import { LiveSyncService } from '../services/live-sync.service';
 import { Enrollment } from '../models/enrollment.model';
 
 export const EnrollmentStore = signalStore(
   { providedIn: 'root' },
 
-  // State: Loading and error flags
   withState({
     isLoading: false,
     error: null as string | null,
   }),
 
-  // Entities: O(1) indexed dictionary for enrollments
   withEntities<Enrollment>(),
 
-  // Computed: Derived values that auto-update
   withComputed((store) => ({
     pendingCount: computed(() => store.entities().filter((e) => e.status === 'Pending').length),
     approvedCount: computed(() => store.entities().filter((e) => e.status === 'Approved').length),
     rejectedCount: computed(() => store.entities().filter((e) => e.status === 'Rejected').length),
   })),
 
-  // Methods: Actions that modify state
-  withMethods((store, api = inject(EnrollmentService)) => ({
-    // Load enrollments from API
+  withMethods((store, api = inject(EnrollmentService), sync = inject(LiveSyncService)) => ({
+    // Load enrollments
     loadEnrollments: rxMethod<void>(
       pipe(
         tap(() => patchState(store, { isLoading: true, error: null })),
@@ -39,21 +36,10 @@ export const EnrollmentStore = signalStore(
             }),
             catchError((err) => {
               console.error('❌ Error loading enrollments:', err);
-
-              // Log more details about the error
-              if (err.status === 0) {
-                console.error('⚠️ Network error - API might not be running or CORS issue');
-                console.error('   - Is your API running? Run: dotnet run');
-                console.error('   - Check CORS configuration in Program.cs');
-              } else if (err.status === 404) {
-                console.error('⚠️ Endpoint not found - Check the URL:', api['baseUrl']);
-              } else if (err.status === 500) {
-                console.error('⚠️ Server error - Check API logs');
-              }
-
               patchState(store, {
                 isLoading: false,
-                error: `Failed to load enrollments: ${err.message || 'Unknown error'}`,
+                error: 'Failed to load enrollments. Please try again.',
+                ...setAllEntities([]),
               });
               return EMPTY;
             }),
@@ -62,17 +48,33 @@ export const EnrollmentStore = signalStore(
       ),
     ),
 
-    // Optimistic Approve: Update UI immediately, rollback if server fails
+    // Listen for live updates from SignalR
+    listenForLiveUpdates: rxMethod<void>(
+      pipe(
+        tap(() => sync.connect()),
+        switchMap(() => sync.events$),
+        tap((event) => {
+          console.log('🔄 Applying live update:', event);
+          patchState(
+            store,
+            updateEntity({
+              id: event.id,
+              changes: { status: event.status },
+            }),
+          );
+        }),
+      ),
+    ),
+
+    // Approve enrollment with optimistic update
     approveEnrollment: rxMethod<string>(
       pipe(
         tap((id) => {
-          // Optimistic update - UI reacts before network completes
           patchState(store, updateEntity({ id, changes: { status: 'Approved' } }));
         }),
         concatMap((id) =>
           api.approve(id).pipe(
             catchError((err) => {
-              // Server rejected - rollback to Pending
               patchState(store, updateEntity({ id, changes: { status: 'Pending' } }));
               patchState(store, {
                 error: 'Server rejected the approval. Check enrollment constraints.',
@@ -85,7 +87,7 @@ export const EnrollmentStore = signalStore(
       ),
     ),
 
-    // Optimistic Reject
+    // Reject enrollment with optimistic update
     rejectEnrollment: rxMethod<string>(
       pipe(
         tap((id) => {

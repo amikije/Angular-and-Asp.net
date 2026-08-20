@@ -4,8 +4,15 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () =>
-      import('./features/student-dashboard/student-dashboard.component').then(
-        (m) => m.StudentDashboardComponent,
+      import('./features/instructor-dashboard/instructor-dashboard.component').then(
+        (m) => m.InstructorDashboardComponent,
+      ),
+  },
+  {
+    path: 'enrollments',
+    loadComponent: () =>
+      import('./features/enrollment-list/enrollment-list.component').then(
+        (m) => m.EnrollmentListComponent,
       ),
   },
   {
@@ -22,7 +29,11 @@ export const routes: Routes = [
         (m) => m.EnrollmentFormComponent,
       ),
   },
-  // ✅ NEW: Enrollment List Route
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full',
+  },
   {
     path: 'enrollments',
     loadComponent: () =>
@@ -31,8 +42,10 @@ export const routes: Routes = [
       ),
   },
   {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
+    path: 'grade-submission',
+    loadComponent: () =>
+      import('./features/grade-submission/grade-submission.component').then(
+        (m) => m.GradeSubmissionComponent,
+      ),
   },
 ];
