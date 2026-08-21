@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-
 using TmsApi.Infrastructure.Persistence;
 
 #nullable disable
@@ -18,12 +17,12 @@ namespace TmsApi.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.9")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ASP.NET_session_3.Entities.Course", b =>
+            modelBuilder.Entity("TmsApi.Domain.Entities.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -52,7 +51,7 @@ namespace TmsApi.Migrations
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("ASP.NET_session_3.Entities.Enrollment", b =>
+            modelBuilder.Entity("TmsApi.Domain.Entities.Enrollment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,7 +77,7 @@ namespace TmsApi.Migrations
                     b.ToTable("Enrollments");
                 });
 
-            modelBuilder.Entity("Student", b =>
+            modelBuilder.Entity("TmsApi.Domain.Entities.Student", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,15 +112,15 @@ namespace TmsApi.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("ASP.NET_session_3.Entities.Enrollment", b =>
+            modelBuilder.Entity("TmsApi.Domain.Entities.Enrollment", b =>
                 {
-                    b.HasOne("ASP.NET_session_3.Entities.Course", "Course")
+                    b.HasOne("TmsApi.Domain.Entities.Course", "Course")
                         .WithMany("Enrollments")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Student", "Student")
+                    b.HasOne("TmsApi.Domain.Entities.Student", "Student")
                         .WithMany("Enrollments")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -132,12 +131,12 @@ namespace TmsApi.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("ASP.NET_session_3.Entities.Course", b =>
+            modelBuilder.Entity("TmsApi.Domain.Entities.Course", b =>
                 {
                     b.Navigation("Enrollments");
                 });
 
-            modelBuilder.Entity("Student", b =>
+            modelBuilder.Entity("TmsApi.Domain.Entities.Student", b =>
                 {
                     b.Navigation("Enrollments");
                 });

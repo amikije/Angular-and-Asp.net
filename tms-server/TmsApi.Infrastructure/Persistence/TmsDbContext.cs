@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TmsApi.Domain.Entities;
-
+using TmsApi.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 namespace TmsApi.Infrastructure.Persistence;
 
 public class TmsDbContext : DbContext

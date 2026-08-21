@@ -6,6 +6,7 @@ using HealthChecks.NpgSql;
 using MediatR;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,7 @@ using TmsApi.Application.Services;
 using TmsApi.Application.Transcripts;
 using TmsApi.Infrastructure.Data;
 using TmsApi.Infrastructure.ExternalServices;
+using TmsApi.Infrastructure.Identity;
 using TmsApi.Infrastructure.Persistence;
 using TmsApi.Infrastructure.Repositories;
 using TmsApi.Infrastructure.Services;
@@ -48,6 +50,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 RegisterCors(builder);
 RegisterDatabase(builder);
+RegisterIdentity(builder);  // ← ADD THIS
 RegisterLogging(builder);
 RegisterControllersAndVersioning(builder);
 RegisterMediatRAndValidation(builder);
@@ -110,6 +113,31 @@ static void RegisterDatabase(WebApplicationBuilder builder)
         options.UseNpgsql(builder.Configuration.GetConnectionString("TmsDatabase"))
             .LogTo(Console.WriteLine, LogLevel.Information)
             .EnableSensitiveDataLogging());
+}
+
+static void RegisterIdentity(WebApplicationBuilder builder)
+{
+    builder.Services.AddIdentityCore<TmsUser>(options =>
+    {
+        // Enterprise Password Policy
+        options.Password.RequiredLength = 12;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireDigit = true;
+        options.Password.RequireNonAlphanumeric = true;
+
+        // Brute-Force Lockout Protection
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        options.Lockout.AllowedForNewUsers = true;
+
+        // User settings
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<TmsDbContext>()
+    .AddDefaultTokenProviders();
+
+    Console.WriteLine("✅ Identity services configured");
 }
 
 static void RegisterLogging(WebApplicationBuilder builder)
@@ -466,7 +494,6 @@ static void ConfigureMiddlewarePipeline(WebApplication app)
 
 static void MapEndpoints(WebApplication app)
 {
-    // ✅ SignalR Hub with CORS policy
     app.MapHub<TmsHub>("/hubs/tms")
        .RequireCors("TmsClient");
 
