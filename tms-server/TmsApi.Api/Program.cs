@@ -5,6 +5,7 @@ using FluentValidation;
 using HealthChecks.NpgSql;
 using MediatR;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -20,6 +22,7 @@ using Polly.CircuitBreaker;
 using Polly.Retry;
 using Polly.Timeout;
 using Scalar.AspNetCore;
+using System.Text;
 using TmsApi.Api.ExceptionHandlers;
 using TmsApi.Api.Filters;
 using TmsApi.Api.Hubs;
@@ -50,7 +53,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 RegisterCors(builder);
 RegisterDatabase(builder);
-RegisterIdentity(builder);  // ← ADD THIS
+RegisterIdentity(builder);
+RegisterJwtAuthentication(builder);  // ← ADD THIS
 RegisterLogging(builder);
 RegisterControllersAndVersioning(builder);
 RegisterMediatRAndValidation(builder);
@@ -138,6 +142,38 @@ static void RegisterIdentity(WebApplicationBuilder builder)
     .AddDefaultTokenProviders();
 
     Console.WriteLine("✅ Identity services configured");
+}
+
+static void RegisterJwtAuthentication(WebApplicationBuilder builder)
+{
+    var jwtKey = builder.Configuration["Jwt:Key"]
+        ?? throw new InvalidOperationException("JWT Key not configured. Run: dotnet user-secrets set \"Jwt:Key\" \"your-secret-key\"");
+
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtKey)
+            )
+        };
+    });
+
+    // Register TokenService for JWT generation
+    builder.Services.AddScoped<TokenService>();
+
+    Console.WriteLine("✅ JWT Authentication configured");
 }
 
 static void RegisterLogging(WebApplicationBuilder builder)
@@ -458,6 +494,11 @@ static void ConfigureMiddlewarePipeline(WebApplication app)
 {
     app.UseRouting();
     app.UseCors("TmsClient");
+
+    // ✅ Authentication & Authorization
+    app.UseAuthentication();  // ← ADD THIS
+    app.UseAuthorization();   // ← ADD THIS
+
     app.UseExceptionHandler();
     app.UseStatusCodePages();
     app.UseMiddleware<V1DeprecationMiddleware>();
@@ -495,7 +536,8 @@ static void ConfigureMiddlewarePipeline(WebApplication app)
 static void MapEndpoints(WebApplication app)
 {
     app.MapHub<TmsHub>("/hubs/tms")
-       .RequireCors("TmsClient");
+       .RequireCors("TmsClient")
+       .RequireAuthorization();  // ← ADD THIS (protect SignalR hub)
 
     app.MapHealthChecks("/health/live", new HealthCheckOptions
     {

@@ -167,3 +167,8 @@ C:\Users\Amir_JS\Desktop\ASP.NET-M7-4-dev\TMS MAIN\tms-server\TmsApi.Api\obj\Deb
 C:\Users\Amir_JS\Desktop\ASP.NET-M7-4-dev\TMS MAIN\tms-server\TmsApi.Api\obj\Debug\net10.0\TmsApi.Api.pdb
 C:\Users\Amir_JS\Desktop\ASP.NET-M7-4-dev\TMS MAIN\tms-server\TmsApi.Api\obj\Debug\net10.0\TmsApi.Api.genruntimeconfig.cache
 C:\Users\Amir_JS\Desktop\ASP.NET-M7-4-dev\TMS MAIN\tms-server\TmsApi.Api\obj\Debug\net10.0\ref\TmsApi.Api.dll
+C:\Users\Amir_JS\Desktop\ASP.NET-M7-4-dev\TMS MAIN\tms-server\TmsApi.Api\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Amir_JS\Desktop\ASP.NET-M7-4-dev\TMS MAIN\tms-server\TmsApi.Api\bin\Debug\net10.0\Microsoft.Bcl.Cryptography.dll
+C:\Users\Amir_JS\Desktop\ASP.NET-M7-4-dev\TMS MAIN\tms-server\TmsApi.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\Amir_JS\Desktop\ASP.NET-M7-4-dev\TMS MAIN\tms-server\TmsApi.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\Amir_JS\Desktop\ASP.NET-M7-4-dev\TMS MAIN\tms-server\TmsApi.Api\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll

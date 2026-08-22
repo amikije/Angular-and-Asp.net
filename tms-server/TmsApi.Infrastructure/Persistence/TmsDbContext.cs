@@ -16,8 +16,8 @@ public class TmsDbContext : IdentityDbContext<TmsUser>
     public DbSet<Course> Courses => Set<Course>();
 
     public DbSet<Enrollment> Enrollments => Set<Enrollment>();
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
-    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(TmsDbContext).Assembly);
