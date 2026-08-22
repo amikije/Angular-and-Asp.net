@@ -4,7 +4,7 @@ using TmsApi.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 namespace TmsApi.Infrastructure.Persistence;
 
-public class TmsDbContext : DbContext
+public class TmsDbContext : IdentityDbContext<TmsUser>
 {
     public TmsDbContext(DbContextOptions<TmsDbContext> options)
         : base(options)

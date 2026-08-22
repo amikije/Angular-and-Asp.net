@@ -34,6 +34,7 @@ public class AuthController : ControllerBase
         var existingUser = await _userManager.FindByEmailAsync(request.Email);
         if (existingUser != null)
         {
+            // Prevent account enumeration
             return Ok(new { message = "Registration request received." });
         }
 
@@ -52,6 +53,7 @@ public class AuthController : ControllerBase
             return BadRequest(new { errors });
         }
 
+        // Ensure requested role exists
         if (!await _roleManager.RoleExistsAsync(request.Role))
         {
             await _roleManager.CreateAsync(new IdentityRole(request.Role));
@@ -102,7 +104,7 @@ public class AuthController : ControllerBase
     [HttpGet("me")]
     public async Task<IActionResult> GetCurrentUser()
     {
-        // This will be implemented with JWT in Session 2
+        // Will be implemented with JWT in Session 2
         return Ok(new { message = "Identity is configured!" });
     }
 }
