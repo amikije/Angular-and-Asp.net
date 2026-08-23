@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-export const authGuard = () => {
+export const authGuard = (p0: RouterStateSnapshot | ActivatedRouteSnapshot) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
@@ -10,6 +10,5 @@ export const authGuard = () => {
     return true;
   }
 
-  // Redirect to login page
   return router.parseUrl('/login');
 };

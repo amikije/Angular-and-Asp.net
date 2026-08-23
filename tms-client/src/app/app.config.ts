@@ -4,13 +4,18 @@ import { provideHttpClient, withInterceptors, withXsrfConfiguration } from '@ang
 import { routes } from './app.routes';
 import { credentialsInterceptor } from './interceptors/credentials.interceptor';
 import { errorInterceptor } from './interceptors/error.interceptor';
+import { jwtInterceptor } from './interceptors/jwt.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(
-      withInterceptors([credentialsInterceptor, errorInterceptor]),
+      withInterceptors([
+        credentialsInterceptor,
+        jwtInterceptor, // ← Now exported correctly
+        errorInterceptor,
+      ]),
       withXsrfConfiguration({
         cookieName: 'XSRF-TOKEN',
         headerName: 'X-XSRF-TOKEN',

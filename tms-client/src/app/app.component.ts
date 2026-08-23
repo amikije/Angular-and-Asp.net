@@ -14,10 +14,9 @@ export class AppComponent implements OnInit {
   private store = inject(EnrollmentStore);
 
   async ngOnInit() {
-    // ✅ Check session on app startup
+    // ✅ checkSession now exists
     await this.auth.checkSession();
 
-    // Load enrollments if authenticated
     if (this.auth.isAuthenticated()) {
       this.store.loadEnrollments();
       this.store.listenForLiveUpdates();

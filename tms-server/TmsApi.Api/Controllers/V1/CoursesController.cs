@@ -1,6 +1,9 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TmsApi.Application.DTOs;
+using TmsApi.Domain.Entities;
 using TmsApi.Infrastructure.Persistence;
 
 namespace TmsApi.Api.Controllers.V1;
@@ -8,16 +11,22 @@ namespace TmsApi.Api.Controllers.V1;
 [ApiController]
 [Route("api/v{version:apiVersion}/courses")]
 [ApiVersion("1.0")]
+[Authorize(Roles = "Instructor,Admin")]
 public class CoursesController : ControllerBase
 {
     private readonly TmsDbContext _context;
+    private readonly IAuthorizationService _authorizationService;
 
-    public CoursesController(TmsDbContext context)
+    public CoursesController(
+        TmsDbContext context,
+        IAuthorizationService authorizationService)
     {
         _context = context;
+        _authorizationService = authorizationService;
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetCourses(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
@@ -39,6 +48,7 @@ public class CoursesController : ControllerBase
                 c.Code,
                 c.Title,
                 c.MaxCapacity,
+                c.InstructorId,
                 EnrollmentCount = c.Enrollments.Count
             })
             .ToListAsync(ct);
@@ -57,39 +67,66 @@ public class CoursesController : ControllerBase
         });
     }
 
-    // ✅ DELETE endpoint with optimistic rollback support
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateCourse(int id, [FromBody] UpdateCourseDto dto)
+    {
+        var course = await _context.Courses.FindAsync(id);
+        if (course == null)
+        {
+            return NotFound();
+        }
+
+        var authResult = await _authorizationService
+            .AuthorizeAsync(User, course, "CanEditCourse");
+
+        if (!authResult.Succeeded)
+        {
+            return Forbid();
+        }
+
+        course.Code = dto.Code;
+        course.Title = dto.Title;
+        course.MaxCapacity = dto.MaxCapacity;
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCourse(int id, CancellationToken ct)
     {
-        // 1. Find the course
         var course = await _context.Courses
             .Include(c => c.Enrollments)
             .FirstOrDefaultAsync(c => c.Id == id, ct);
 
         if (course == null)
         {
-            return NotFound(new
-            {
-                title = "Not Found",
-                detail = $"Course with ID {id} was not found.",
-                status = 404
-            });
+            return NotFound();
         }
 
-        // 2. Check if course has any enrollments before deleting it
-        var hasEnrollments = course.Enrollments.Any();
+        var authResult = await _authorizationService
+            .AuthorizeAsync(User, course, "CanEditCourse");
 
-        if (hasEnrollments)
+        if (!authResult.Succeeded)
+        {
+            return Forbid();
+        }
+
+
+        var hasActiveEnrollments = course.Enrollments.Any();
+
+
+        if (hasActiveEnrollments)
         {
             return Conflict(new
             {
                 title = "Conflict",
-                detail = "Cannot delete course: student enrollments exist.",
+                detail = "Cannot delete course: active student enrollments exist.",
                 status = 409
             });
         }
 
-        // 3. Delete the course
         _context.Courses.Remove(course);
         await _context.SaveChangesAsync(ct);
 

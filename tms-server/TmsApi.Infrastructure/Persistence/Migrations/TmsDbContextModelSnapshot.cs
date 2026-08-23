@@ -167,6 +167,9 @@ namespace TmsApi.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
 
+                    b.Property<string>("InstructorId")
+                        .HasColumnType("text");
+
                     b.Property<int>("MaxCapacity")
                         .HasColumnType("integer");
 

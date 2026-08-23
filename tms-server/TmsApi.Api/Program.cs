@@ -23,6 +23,7 @@ using Polly.Retry;
 using Polly.Timeout;
 using Scalar.AspNetCore;
 using System.Text;
+using TmsApi.Api.Authorization;
 using TmsApi.Api.ExceptionHandlers;
 using TmsApi.Api.Filters;
 using TmsApi.Api.Hubs;
@@ -44,6 +45,7 @@ using TmsApi.Infrastructure.Repositories;
 using TmsApi.Infrastructure.Services;
 using TmsApi.Infrastructure.Transcripts;
 using TmsApi.Infrastructure.Workers;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,7 +56,8 @@ var builder = WebApplication.CreateBuilder(args);
 RegisterCors(builder);
 RegisterDatabase(builder);
 RegisterIdentity(builder);
-RegisterJwtAuthentication(builder);  // ← ADD THIS
+RegisterJwtAuthentication(builder);
+RegisterAuthorizationPolicies(builder);  // ← ADD THIS
 RegisterLogging(builder);
 RegisterControllersAndVersioning(builder);
 RegisterMediatRAndValidation(builder);
@@ -123,18 +126,15 @@ static void RegisterIdentity(WebApplicationBuilder builder)
 {
     builder.Services.AddIdentityCore<TmsUser>(options =>
     {
-        // Enterprise Password Policy
         options.Password.RequiredLength = 12;
         options.Password.RequireUppercase = true;
         options.Password.RequireDigit = true;
         options.Password.RequireNonAlphanumeric = true;
 
-        // Brute-Force Lockout Protection
         options.Lockout.MaxFailedAccessAttempts = 5;
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
         options.Lockout.AllowedForNewUsers = true;
 
-        // User settings
         options.User.RequireUniqueEmail = true;
     })
     .AddRoles<IdentityRole>()
@@ -170,10 +170,20 @@ static void RegisterJwtAuthentication(WebApplicationBuilder builder)
         };
     });
 
-    // Register TokenService for JWT generation
     builder.Services.AddScoped<TokenService>();
 
     Console.WriteLine("✅ JWT Authentication configured");
+}
+
+static void RegisterAuthorizationPolicies(WebApplicationBuilder builder)
+{
+    builder.Services.AddAuthorizationBuilder()
+        .AddPolicy("CanEditCourse", policy =>
+            policy.Requirements.Add(new CourseInstructorRequirement()));
+
+    builder.Services.AddSingleton<IAuthorizationHandler, CourseInstructorHandler>();
+
+    Console.WriteLine("✅ Authorization policies configured");
 }
 
 static void RegisterLogging(WebApplicationBuilder builder)
@@ -288,6 +298,16 @@ static void RegisterRateLimiting(WebApplicationBuilder builder)
                         AutoReplenishment = true
                     })
             };
+        });
+
+        // ✅ Rate limiting for auth endpoints
+        options.AddTokenBucketLimiter("auth", opt =>
+        {
+            opt.TokenLimit = 5;
+            opt.TokensPerPeriod = 1;
+            opt.ReplenishmentPeriod = TimeSpan.FromMinutes(1);
+            opt.QueueLimit = 0;
+            opt.AutoReplenishment = true;
         });
 
         options.AddTokenBucketLimiter("search", opt =>
@@ -495,16 +515,15 @@ static void ConfigureMiddlewarePipeline(WebApplication app)
     app.UseRouting();
     app.UseCors("TmsClient");
 
-    // ✅ Authentication & Authorization
-    app.UseAuthentication();  // ← ADD THIS
-    app.UseAuthorization();   // ← ADD THIS
+    app.UseAuthentication();
+    app.UseAuthorization();
 
     app.UseExceptionHandler();
     app.UseStatusCodePages();
     app.UseMiddleware<V1DeprecationMiddleware>();
+    app.UseMiddleware<SecurityHeadersMiddleware>();  // ← ADD THIS
     app.UseRateLimiter();
 
-    // XSRF Token Middleware
     app.Use(async (context, next) =>
     {
         if (context.User.Identity?.IsAuthenticated == true ||
@@ -537,7 +556,7 @@ static void MapEndpoints(WebApplication app)
 {
     app.MapHub<TmsHub>("/hubs/tms")
        .RequireCors("TmsClient")
-       .RequireAuthorization();  // ← ADD THIS (protect SignalR hub)
+       .RequireAuthorization();
 
     app.MapHealthChecks("/health/live", new HealthCheckOptions
     {
@@ -559,7 +578,6 @@ static void MapEndpoints(WebApplication app)
 
     app.MapControllers();
 
-    // Lab-only fake certificate service
     var attempts = 0;
     app.MapPost("/fake/certificates", async () =>
     {

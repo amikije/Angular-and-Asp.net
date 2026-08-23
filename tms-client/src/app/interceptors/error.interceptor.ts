@@ -1,35 +1,55 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { catchError, throwError, switchMap, from } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
+  const auth = inject(AuthService);
   const router = inject(Router);
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
-      // Extract RFC 7807 ProblemDetails detail property
+      // Skip auth endpoints
+      if (req.url.includes('/auth/refresh') || req.url.includes('/auth/login')) {
+        return throwError(() => err);
+      }
+
+      // Handle 401 - try refresh
+      if (err.status === 401) {
+        // ✅ Use refreshAccessToken (not refreshToken)
+        return from(auth.refreshAccessToken()).pipe(
+          switchMap((success) => {
+            if (success) {
+              const token = auth.getAccessToken();
+              if (token) {
+                const clonedReq = req.clone({
+                  setHeaders: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                });
+                return next(clonedReq);
+              }
+            }
+            auth.logout();
+            router.navigate(['/login']);
+            return throwError(() => err);
+          }),
+        );
+      }
+
+      // Handle 403
+      if (err.status === 403) {
+        console.warn('⛔ Access Denied: You do not have permission.');
+        router.navigate(['/unauthorized']);
+        return throwError(() => err);
+      }
+
+      // Handle other errors
       const detailMessage =
         err.error?.detail ?? err.error?.title ?? 'A system error occurred. Please try again.';
 
-      if (err.status === 401) {
-        // Redirect expired or unauthenticated sessions back to login
-        console.warn('🔒 Session expired. Redirecting to login...');
-        router.navigate(['/login']);
-      } else if (err.status === 403) {
-        console.warn('⛔ Forbidden: You do not have permission.');
-      } else if (err.status === 409) {
-        console.warn('⚠️ Conflict:', detailMessage);
-      } else if (err.status === 400) {
-        console.warn('⚠️ Bad Request:', detailMessage);
-      } else if (err.status === 404) {
-        console.warn('🔍 Not Found:', detailMessage);
-      } else if (err.status === 500) {
-        console.error('💥 Server Error:', detailMessage);
-      } else {
-        console.error('❌ API Error Response:', detailMessage);
-      }
-
+      console.warn(`⚠️ ${err.status}:`, detailMessage);
       return throwError(() => err);
     }),
   );

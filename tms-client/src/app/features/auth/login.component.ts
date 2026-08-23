@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -7,12 +7,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common';
+import { AuthService, LoginRequest } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,
@@ -32,11 +34,39 @@ export class LoginComponent {
   isLoading = signal(false);
   error = signal<string | null>(null);
   hidePassword = signal(true);
+  isDarkMode = signal(false);
 
   loginForm = this.fb.group({
-    username: ['admin', Validators.required],
-    password: ['Password123!', [Validators.required, Validators.minLength(6)]],
+    email: ['admin@example.com', [Validators.required, Validators.email]],
+    password: ['Password123!', [Validators.required, Validators.minLength(8)]],
+    rememberMe: [false],
   });
+
+  constructor() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      this.isDarkMode.set(true);
+      document.body.classList.add('dark-theme');
+    }
+
+    effect(() => {
+      if (this.isDarkMode()) {
+        document.body.classList.add('dark-theme');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.remove('dark-theme');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+  }
+
+  toggleTheme() {
+    this.isDarkMode.update((v) => !v);
+  }
+
+  togglePasswordVisibility() {
+    this.hidePassword.update((v) => !v);
+  }
 
   async onSubmit() {
     if (this.loginForm.invalid) {
@@ -48,18 +78,22 @@ export class LoginComponent {
     this.error.set(null);
 
     try {
-      const { username, password } = this.loginForm.getRawValue();
-      await this.auth.login({ username: username!, password: password! });
+      const { email, password } = this.loginForm.getRawValue();
+      const credentials: LoginRequest = {
+        username: email!,
+        password: password!,
+      };
+      await this.auth.login(credentials);
       this.router.navigate(['/dashboard']);
     } catch (err) {
-      this.error.set('Invalid username or password. Please try again.');
+      this.error.set('Invalid email or password. Please try again.');
       console.error('Login error:', err);
     } finally {
       this.isLoading.set(false);
     }
   }
 
-  togglePasswordVisibility() {
-    this.hidePassword.update((v) => !v);
+  get currentYear(): number {
+    return new Date().getFullYear();
   }
 }
